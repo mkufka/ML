@@ -8,7 +8,7 @@ Dieses Projekt verwendet ein Convolutional Neural Network (CNN) zur Klassifikati
 
 ### Voraussetzungen
 
-1. **Python 3.11** (oder kompatibel) muss installiert sein
+1. **Python 3.11** (oder neuer) muss installiert sein --> getestet auf 3.11.9 und 3.13.7
 2. **Virtual Environment** erstellen und aktivieren:
    ```bash
    # Windows
