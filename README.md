@@ -4,6 +4,84 @@ Dieses Projekt verwendet ein Convolutional Neural Network (CNN) zur Klassifikati
 
 ---
 
+## 🚀 Schnellstart
+
+### Voraussetzungen
+
+1. **Python 3.11** (oder kompatibel) muss installiert sein
+2. **Virtual Environment** erstellen und aktivieren:
+   ```bash
+   # Windows
+   python -m venv venv
+   .\venv\Scripts\activate
+
+   # Linux/Mac
+   python -m venv venv
+   source venv/bin/activate
+   ```
+
+3. **Abhängigkeiten installieren:**
+   ```bash
+   pip install tensorflow numpy matplotlib scikit-learn pillow
+   ```
+
+### Projekt verwenden
+
+#### Option A: Nur Vorhersagen (schnell)
+Wenn das Modell bereits trainiert ist (`model_output/best_fruit_classifier_cnn.keras` existiert):
+
+1. Öffnen Sie `Fruit_Prediction_Only.ipynb` in Jupyter Notebook oder VS Code
+2. Legen Sie Ihre Obstbilder in den `Obst`-Ordner
+3. Führen Sie alle Zellen aus
+
+#### Option B: Modell selbst trainieren
+1. Stellen Sie sicher, dass Trainingsdaten im `Bilder/Training/` und `Bilder/Test/` Ordner vorhanden sind
+2. Öffnen Sie `Fruit_Classification_CNN_Complete.ipynb`
+3. Führen Sie alle Zellen der Reihe nach aus
+4. Das Training dauert ca. 10-30 Minuten (je nach Hardware)
+
+---
+
+## ⚠️ Wichtig: Worauf Sie achten müssen
+
+### 1. Bildformat für optimale Ergebnisse
+Das Modell wurde auf dem **Fruits-360 Dataset** trainiert. Für beste Ergebnisse sollten Ihre Bilder folgende Eigenschaften haben:
+
+| ✅ Optimal | ❌ Problematisch |
+|-----------|------------------|
+| Weißer/heller Hintergrund | Komplexe Hintergründe |
+| Einzelne, ganze Frucht | Aufgeschnittene Früchte |
+| Frucht zentriert | Mehrere Früchte im Bild |
+| Keine Wasserzeichen | Shutterstock/Stock-Photo Watermarks |
+| Gute Beleuchtung | Schatten oder Überbelichtung |
+
+### 2. Trainingsdaten-Struktur
+Die Trainingsbilder müssen in folgender Struktur vorliegen:
+```
+Bilder/
+├── Training/
+│   ├── Apple */       # Ordner die mit "Apple" beginnen
+│   ├── Banana */
+│   ├── Cherry */
+│   └── ...
+└── Test/
+    ├── Apple */
+    ├── Banana */
+    └── ...
+```
+
+### 3. GPU-Nutzung (empfohlen)
+- Mit GPU: Training in ~10 Minuten
+- Ohne GPU (nur CPU): Training in ~30+ Minuten
+- TensorFlow erkennt CUDA-fähige GPUs automatisch
+
+### 4. Speicherplatz
+- Trainingsdaten: ~500 MB (gefiltert)
+- Trainiertes Modell: ~6 MB
+- Temporäre Daten: ~500 MB im `filtered_data/` Ordner
+
+---
+
 ## 📊 Modell-Architektur
 
 ### **Gesamt: 27 Layer**
