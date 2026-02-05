@@ -75,6 +75,52 @@ Bilder/
 
 ## 📊 Modell-Architektur
 
+### Voraussetzungen
+- Windows 10/11
+- NVIDIA GPU (empfohlen, z.B. GTX 1080 Ti)
+- NVIDIA Treiber installiert
+
+### Option A: Automatische GPU-Installation (empfohlen)
+
+1. **PowerShell als Administrator öffnen**
+2. **Setup-Skript ausführen:**
+   ```powershell
+   cd C:\Pfad\zum\Projekt
+   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+   .\setup_gpu_environment.ps1
+   ```
+3. **VS Code neu starten**
+4. **Kernel "Python 3.10 (Fruit Classifier GPU)" auswählen**
+
+### Option B: Manuelle Installation mit Conda
+
+```powershell
+# Miniconda installieren (falls nicht vorhanden)
+winget install Anaconda.Miniconda3
+
+# Umgebung erstellen
+conda env create -f environment.yml
+
+# Aktivieren
+conda activate fruit_classifier_gpu
+
+# Jupyter Kernel registrieren
+python -m ipykernel install --user --name fruit_classifier_gpu --display-name "Python 3.10 (Fruit Classifier GPU)"
+```
+
+### Option C: CPU-only (ohne GPU)
+
+```powershell
+# Virtuelle Umgebung erstellen
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+---
+
+## �📊 Modell-Architektur
+
 ### **Gesamt: 27 Layer**
 
 Aufgeteilt in:

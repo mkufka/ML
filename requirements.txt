@@ -1,0 +1,9 @@
+# Requirements für Obstklassifikation CNN
+# Für GPU-Unterstützung: Verwende environment.yml mit Conda
+
+tensorflow==2.10.0
+numpy<2
+matplotlib
+scikit-learn
+pillow
+ipykernel
