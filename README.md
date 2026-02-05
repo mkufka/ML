@@ -9,21 +9,12 @@ Dieses Projekt verwendet ein Convolutional Neural Network (CNN) zur Klassifikati
 ### Voraussetzungen
 
 1. **Python 3.11** (oder neuer) muss installiert sein --> getestet auf 3.11.9 und 3.13.7
-2. **Virtual Environment** erstellen und aktivieren:
-   ```bash
-   # Windows
-   python -m venv venv
-   .\venv\Scripts\activate
-
-   # Linux/Mac
-   python -m venv venv
-   source venv/bin/activate
-   ```
-
-3. **Abhängigkeiten installieren:**
+2. **Abhängigkeiten installieren** (falls noch nicht vorhanden):
    ```bash
    pip install tensorflow numpy matplotlib scikit-learn pillow
    ```
+
+   > **Hinweis:** Das Projekt enthält bereits ein vorkonfiguriertes `venv/`-Verzeichnis. Falls Sie dieses nutzen möchten, aktivieren Sie es mit `.\venv\Scripts\activate` (Windows) oder `source venv/bin/activate` (Linux/Mac).
 
 ### Projekt verwenden
 
