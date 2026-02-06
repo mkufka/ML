@@ -1,0 +1,18 @@
+name: fruit_classifier_gpu_tf212
+channels:
+  - conda-forge
+  - nvidia
+  - defaults
+dependencies:
+  - python=3.10
+  - cudatoolkit=11.8
+  - cudnn=8.9.2.26
+  - pip
+  - pip:
+    - tensorflow==2.12.0
+    - numpy<2
+    - matplotlib
+    - scikit-learn
+    - pillow
+    - ipykernel
+
