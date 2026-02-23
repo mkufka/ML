@@ -1,6 +1,6 @@
-# Fruit Classification CNN - Dokumentation
+# Fruit Classification - MobileNetV2 Transfer Learning
 
-Dieses Projekt verwendet ein Convolutional Neural Network (CNN) zur Klassifikation von 9 verschiedenen Obstsorten.
+Dieses Projekt verwendet **MobileNetV2 Transfer Learning** zur Klassifikation von 9 verschiedenen Obstsorten.
 
 ---
 
@@ -75,131 +75,90 @@ Bilder/
 
 ## 📊 Modell-Architektur
 
-### **Gesamt: 27 Layer**
+### **MobileNetV2 Transfer Learning**
 
-Aufgeteilt in:
+Das Modell besteht aus zwei Teilen:
 
-#### **1. Convolutional Blocks (4 Blöcke):**
-- **Block 1:** 2× Conv2D (32 Filter) + 2× BatchNorm + MaxPooling + Dropout = **6 Layer**
-- **Block 2:** 2× Conv2D (64 Filter) + 2× BatchNorm + MaxPooling + Dropout = **6 Layer**
-- **Block 3:** 2× Conv2D (128 Filter) + 2× BatchNorm + MaxPooling + Dropout = **6 Layer**
-- **Block 4:** 2× Conv2D (256 Filter) + 2× BatchNorm + MaxPooling + Dropout = **6 Layer**
+#### **1. Feature Extractor: MobileNetV2 (eingefroren)**
+- Vortrainiert auf **ImageNet** (1.4 Millionen echte Fotos, 1000 Klassen)
+- Erkennt bereits allgemeine visuelle Features (Kanten, Texturen, Formen, Farben)
+- Layer sind **eingefroren** (werden nicht mittrainiert)
+- Verwendet Global Average Pooling am Ende
 
-**Convolutional Teil: 24 Layer**
-
-#### **2. Fully Connected Teil:**
-- **GlobalAveragePooling2D** = **1 Layer**
-- **Dense (512) + BatchNorm + Dropout** = **3 Layer**
-- **Dense (256) + BatchNorm + Dropout** = **3 Layer**
-- **Output Dense (9 Klassen) mit Softmax** = **1 Layer**
-
-**Dense Teil: 8 Layer**
+#### **2. Custom Classifier (trainierbar)**
+- **BatchNormalization** → Stabilisierung
+- **Dropout (0.3)** → Overfitting-Schutz
+- **Dense (256, ReLU)** → Feature-Kombination
+- **BatchNormalization** → Stabilisierung
+- **Dropout (0.3)** → Overfitting-Schutz
+- **Dense (9, Softmax)** → Output für 9 Obstklassen
 
 ---
 
 ### **Modell-Statistiken:**
-- **Insgesamt: 27 Layer**
-- **Trainierbare Parameter: 1.440.937** (ca. 1,4 Millionen)
-- **Architektur-Typ:** Custom CNN (Convolutional Neural Network)
-- **4 Convolutional Blocks** mit steigender Filterzahl (32 → 64 → 128 → 256)
-- **2 Dense Hidden Layers** (512 → 256)
-- **Output Layer** mit 9 Neuronen (für 9 Obstklassen)
+- **Basismodell:** MobileNetV2 (vortrainiert auf ImageNet)
+- **Trainierbare Parameter:** nur der Classifier-Teil (~330K)
+- **Nicht-trainierbare Parameter:** ~2.2M (eingefrorene MobileNetV2-Weights)
+- **Architektur-Typ:** Transfer Learning
+- **Preprocessing:** MobileNetV2 `preprocess_input` (skaliert Pixel auf [-1, 1])
 
-Das ist ein **mittelgroßes CNN** - nicht zu klein (würde underfitting verursachen), nicht zu groß (würde overfitting verursachen). Perfekt für 9 Obstklassen! 🍎🍌🍊
-
----
-
-## 🧠 Layer-Typen Erklärt
-
-### **1. Conv2D (Convolutional Layer)** 🔍
-**Was macht er?**
-- Erkennt **Muster und Features** im Bild (z.B. Kanten, Farben, Texturen)
-- Verwendet kleine **Filter** (3×3 Pixel), die über das Bild "gleiten"
-- Frühe Layer erkennen einfache Muster (Kanten), tiefe Layer erkennen komplexe Muster (Formen, Objekte)
-
-**In diesem Modell:**
-- Block 1: 32 Filter (erkennt 32 verschiedene einfache Muster)
-- Block 2: 64 Filter (erkennt 64 komplexere Muster)
-- Block 3: 128 Filter
-- Block 4: 256 Filter (erkennt sehr komplexe Features wie "Apfelform" oder "Bananenkrümmung")
-
-**Beispiel:** Ein Filter könnte spezialisiert sein auf "rote runde Formen" → Apfel!
+**Vorteile gegenüber Custom CNN:**
+- ✅ Schnelleres Training (nur Classifier wird trainiert)
+- ✅ Bessere Generalisierung durch vortrainierte Features
+- ✅ Robuster gegen Störungen (Watermarks, verschiedene Hintergründe)
+- ✅ Weniger Overfitting bei kleinen Datensätzen
 
 ---
 
-### **2. BatchNormalization** ⚖️
-**Was macht er?**
+## 🧠 Wichtige Konzepte
+
+### **1. Transfer Learning** 🔄
+**Was ist das?**
+- Ein **vortrainiertes Modell** (MobileNetV2, trainiert auf ImageNet) wird als Basis verwendet
+- Das Modell hat bereits gelernt, **allgemeine visuelle Features** zu erkennen
+- Wir frieren diese Layer ein und trainieren nur einen neuen **Classifier** für unsere Obstklassen
+
+**Vorteile:**
+- Viel **weniger Trainingsdaten** nötig
+- **Schnelleres** Training
+- **Bessere** Generalisierung
+- **Robuster** gegen Variationen in den Bildern
+
+---
+
+### **2. MobileNetV2** 📱
+**Was ist das?**
+- Ein **effizientes** CNN, entwickelt von Google
+- Vortrainiert auf **ImageNet** (1.4M Bilder, 1000 Klassen)
+- Verwendet **Depthwise Separable Convolutions** für weniger Parameter
+- Ideal für **mobile und eingebettete Anwendungen**
+
+---
+
+### **3. BatchNormalization** ⚖️
+**Was macht es?**
 - **Normalisiert** die Werte zwischen den Layern
 - Macht das Training **stabiler und schneller**
 - Verhindert, dass Werte zu groß oder zu klein werden
 
-**Analogie:** Wie ein Thermostat, der die Temperatur konstant hält, damit nichts überhitzt oder einfriert.
-
----
-
-### **3. MaxPooling2D** 📉
-**Was macht er?**
-- **Verkleinert** das Bild (z.B. von 100×100 auf 50×50)
-- Nimmt nur die **wichtigsten Informationen** (Maximum aus jedem 2×2 Bereich)
-- Reduziert Rechenaufwand und macht das Modell robuster
-
-**Beispiel:** 
-```
-Vorher (4×4):     Nachher (2×2):
-[1 3 2 4]         [3 8]
-[2 1 5 8]    →    [9 7]
-[6 9 3 2]
-[4 7 1 5]
-```
-Nimmt jeweils das Maximum aus jedem 2×2 Block.
-
 ---
 
 ### **4. Dropout** 🎲
-**Was macht er?**
-- Schaltet **zufällig** einige Neuronen während des Trainings aus (z.B. 25% oder 50%)
+**Was macht es?**
+- Schaltet **zufällig** einige Neuronen während des Trainings aus
 - Verhindert **Overfitting** (dass das Modell die Trainingsdaten auswendig lernt)
-- Zwingt das Modell, robuster zu werden
-
-**Analogie:** Wie ein Fußballteam, das auch mit 10 statt 11 Spielern trainiert, damit es flexibler wird.
-
-**In diesem Modell:**
-- 0.25 = 25% der Neuronen werden ausgeschaltet (in Conv-Blöcken)
-- 0.5 = 50% der Neuronen werden ausgeschaltet (in Dense-Layern)
+- In diesem Modell: 0.3 = 30% der Neuronen werden ausgeschaltet
 
 ---
 
-### **5. GlobalAveragePooling2D** 🌐
-**Was macht er?**
-- Nimmt den **Durchschnitt** aller Werte in jedem Feature-Map
-- Wandelt z.B. 256 Feature-Maps (6×6 Pixel) in 256 einzelne Zahlen um
-- Reduziert massiv die Parameter-Anzahl
-
-**Beispiel:**
-```
-Feature-Map (6×6):        Ergebnis:
-[1 2 3 4 5 6]
-[2 3 4 5 6 7]       →     Durchschnitt = 4.5
-[3 4 5 6 7 8]
-...
-```
-
----
-
-### **6. Dense (Fully Connected Layer)** 🔗
+### **5. Dense (Fully Connected Layer)** 🔗
 **Was macht er?**
 - **Klassischer neuronaler Layer** - jedes Neuron ist mit allen vorherigen verbunden
 - Kombiniert alle gelernten Features zu einer Entscheidung
-- Die letzten Dense-Layer "denken" über die Features nach
-
-**In diesem Modell:**
-- Dense(512): 512 Neuronen kombinieren Features
-- Dense(256): 256 Neuronen verfeinern die Entscheidung
-- Dense(9): **Output-Layer** - 9 Neuronen (eine pro Obstsorte)
 
 ---
 
-### **7. Softmax (Aktivierungsfunktion im Output)** 📊
+### **6. Softmax (Aktivierungsfunktion im Output)** 📊
 **Was macht sie?**
 - Wandelt die 9 Output-Werte in **Wahrscheinlichkeiten** um (0-100%)
 - Alle Wahrscheinlichkeiten zusammen ergeben **100%**
@@ -221,20 +180,20 @@ Cherry:  -1.2  →    Cherry:      2%
 ```
 Bild (100×100×3)
     ↓
-[Conv2D → BatchNorm → Conv2D → BatchNorm → MaxPool → Dropout]  ← Block 1
-    ↓ (50×50×32)
-[Conv2D → BatchNorm → Conv2D → BatchNorm → MaxPool → Dropout]  ← Block 2
-    ↓ (25×25×64)
-[Conv2D → BatchNorm → Conv2D → BatchNorm → MaxPool → Dropout]  ← Block 3
-    ↓ (12×12×128)
-[Conv2D → BatchNorm → Conv2D → BatchNorm → MaxPool → Dropout]  ← Block 4
-    ↓ (6×6×256)
-GlobalAveragePooling2D
-    ↓ (256 Zahlen)
-Dense(512) → BatchNorm → Dropout
-    ↓ (512 Zahlen)
-Dense(256) → BatchNorm → Dropout
-    ↓ (256 Zahlen)
+MobileNetV2 preprocess_input (skaliert auf [-1, 1])
+    ↓
+MobileNetV2 Feature Extractor (eingefroren)
+    ↓ (1280 Features via Global Average Pooling)
+BatchNormalization
+    ↓
+Dropout (0.3)
+    ↓
+Dense(256, ReLU)
+    ↓
+BatchNormalization
+    ↓
+Dropout (0.3)
+    ↓
 Dense(9) + Softmax
     ↓
 [Apple: 85%, Banana: 10%, Cherry: 2%, ...]
@@ -242,15 +201,13 @@ Dense(9) + Softmax
 
 ---
 
-## 📝 Layer-Typen Zusammenfassung
+## 📝 Komponenten Zusammenfassung
 
-| Layer-Typ | Funktion |
+| Komponente | Funktion |
 |-----------|----------|
-| **Conv2D** | Mustererkennung |
+| **MobileNetV2** | Vortrainierter Feature Extractor |
 | **BatchNorm** | Stabilisierung |
-| **MaxPooling** | Verkleinerung |
 | **Dropout** | Overfitting-Schutz |
-| **GlobalAveragePooling** | Komprimierung |
 | **Dense** | Entscheidungsfindung |
 | **Softmax** | Wahrscheinlichkeiten |
 
